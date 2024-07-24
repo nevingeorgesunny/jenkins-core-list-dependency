@@ -1,17 +1,17 @@
-# Jenkins Dependencies Comparator
-This shell script is designed to list the dependencies of two different versions of Jenkins. It also lists the differences between the two versions and provides URLs and reference documentation containing GitHub comparison links for most of the jars.
+# Jenkins Dependencies List
+This shell script is designed to list the dependencies of two different versions of Jenkins, so as to compare the version between each jars
 
 ## Features
 - List all jar in `WEB-INF/lib/*.jar` for each version
-- Optinally it will alos do a diff of the above step 
-- Lists out a few github compare URLs for easy access for checking jar diff
+- Optionally it will also do a diff of the above step 
+- Lists out a few GitHub compare URLs for easy access for checking jar diff
 
 ## How does it work
-- Fetches the older jenkins war file with `mvn dependency:get -DartifactId=jenkins-war -DgroupId=org.jenkins-ci.main -Dpackaging=war -Dversion=$VERSION_ONE -Dtransitive=false`
+- Fetches the older Jenkins war file with `mvn dependency:get -DartifactId=jenkins-war -DgroupId=org.jenkins-ci.main -Dpackaging=war -Dversion=$VERSION_ONE -Dtransitive=false`
 - Unzips it to a folder `unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/$VERSION_ONE/jenkins-war-$VERSION_ONE.war -d $VERSION_ONE`
-- Fetches the newer jenkins war file with `mvn dependency:get -DartifactId=jenkins-war -DgroupId=org.jenkins-ci.main -Dpackaging=war -Dversion=$VERSION_TWO -Dtransitive=false`
+- Fetches the newer Jenkins war file with `mvn dependency:get -DartifactId=jenkins-war -DgroupId=org.jenkins-ci.main -Dpackaging=war -Dversion=$VERSION_TWO -Dtransitive=false`
 - Unzios the newer one `unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/$VERSION_TWO/jenkins-war-$VERSION_TWO.war -d $VERSION_TWO`
-- list out and comare the diff between `/WEB-INF/lib/*`
+- list out and compare the diff between `/WEB-INF/lib/*`
 
 ## Usage 
 - clone the code
