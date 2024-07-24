@@ -1,4 +1,4 @@
-# Jenkins Dependencies List
+# jenkins-core-dependencies-list
 This shell script is designed to list the dependencies of two different versions of Jenkins, so as to compare the version between each jars
 
 ## Features
