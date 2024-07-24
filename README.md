@@ -26,3 +26,23 @@ This shell script is designed to list the dependencies of two different versions
   Enter the old version: <older_version>
   Enter the new version: <newer_version>
   ```
+## Sample Output
+<img width="879" alt="image" src="https://github.com/user-attachments/assets/d2fc5ba6-925e-4c4f-b5a0-e8353afd6dfd">
+
+## To view the diff (optional Step)
+the script also creates a html diff using diff2html. To use diff2html, you need Node.js installed on your system. If diff2html is not installed, the script will just throw a warning. You will need to do the diff on your own
+
+how to do this on mac
+```bash
+brew install node
+npm install diff2html
+npm install diff2html-cli
+```
+
+how to do this on ubuntu
+```bash
+apt install -y nodejs
+apt install -y npm
+npm install diff2html
+npm install diff2html-cli
+```
