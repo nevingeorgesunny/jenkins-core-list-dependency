@@ -16,6 +16,7 @@ This shell script is designed to list the dependencies of two different versions
 ## Usage 
 - clone the code
 - cd to the folder
+- make sure the `maven` and `unzip` are installed
 - run these
   ```bash
   chmod +x jenkins-list-dependency-changes.sh
