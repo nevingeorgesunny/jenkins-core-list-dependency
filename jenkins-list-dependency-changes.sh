@@ -51,9 +51,6 @@ echo -e "${CYAN}Refernce for comparison URL for artifacts: ${YELLOW}https://docs
 
 
 # Generate diff and convert to HTML for dependency (optional: for diff2html to work you will need to install Node.js)
-# brew install node
-# npm install diff2html
-# npm install diff2html-cli
 diff -u version_one_libs.txt version_two_libs.txt > diff_libs.txt
 diff2html -i file -- diff_libs.txt > diff_libs.html --title "Private Jenkins Jar Diff between $VERSION_ONE VS $VERSION_TWO"
 
