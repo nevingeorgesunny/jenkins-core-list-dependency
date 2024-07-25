@@ -28,9 +28,8 @@ This shell script is designed to list the dependencies of two different versions
   Enter the new version: <newer_version>
   ```
 ## Sample Output
-<img width="879" alt="image" src="https://github.com/user-attachments/assets/d2fc5ba6-925e-4c4f-b5a0-e8353afd6dfd">
+![jenkins-diff](https://github.com/user-attachments/assets/de307b6d-a22c-400a-9afb-68946e335454)
 
-refer to this recoreding : https://jmp.sh/GFUGVqAB
 
 ## To view the diff (optional Step)
 the script also creates a html diff using diff2html. To use diff2html, you need Node.js installed on your system. If diff2html is not installed, the script will just throw a warning. You will need to do the diff on your own
