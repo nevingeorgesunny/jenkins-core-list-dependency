@@ -44,17 +44,6 @@ get_dependencie_list ${VERSION_TWO}
 
 diff -u ${VERSION_ONE}_libs.txt ${VERSION_TWO}_libs.txt > lib_diff.txt
 
-# Output the differences
-printf "\n\n\n"
-
-echo -e "${CYAN}$VERSION_ONE ${YELLOW}dependency:${NC}"
-cat ${VERSION_ONE}_libs.txt
-
-printf "\n\n"
-
-echo -e "${CYAN}$VERSION_TWO ${YELLOW}dependency:${NC}"
-cat ${VERSION_TWO}_libs.txt
-
 # Create compare URLs for Jenkins core
 JENKINSCORE_COMPARE_URL="https://github.com/cloudbees/private-jenkins/compare/jenkins-$VERSION_ONE...jenkins-$VERSION_TWO"
 echo -e "\n\n${CYAN}Jenkins core compare URL:${YELLOW} $JENKINSCORE_COMPARE_URL${NC}"
