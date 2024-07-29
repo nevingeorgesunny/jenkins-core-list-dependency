@@ -2,8 +2,12 @@
 set -euo pipefail
 
 # Prompt the user to enter versions
-read -p "Enter the old version: " VERSION_ONE
-read -p "Enter the new version: " VERSION_TWO
+if [[ -z  "${VERSION_ONE-''}" ]]; then
+  read -p "Enter the old version: " VERSION_ONE
+fi
+if [[ -z "${VERSION_TWO-''}" ]]; then
+  read -p "Enter the new version: " VERSION_TWO
+fi
 
 # Colors for output
 CYAN='\033[0;36m'
