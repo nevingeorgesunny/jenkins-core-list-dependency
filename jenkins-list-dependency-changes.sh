@@ -1,5 +1,5 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
+set -euo pipefail
 
 # Prompt the user to enter versions
 read -p "Enter the old version: " VERSION_ONE
