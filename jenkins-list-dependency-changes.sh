@@ -21,36 +21,39 @@ get_war() {
     mvn -q dependency:get -DartifactId=jenkins-war -DgroupId=org.jenkins-ci.main -Dpackaging=war -Dversion="${version}" -Dtransitive=false
 }
 
+get_dependencie_list() {
+    local version="${1}"
+
+    echo -e "${CYAN}Running : ${YELLOW}unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/${version}/jenkins-war-${version}.war -d ${version}${NC}\n\n"
+    unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/${version}/jenkins-war-${version}.war -d ${version}
+
+    ls -1 ${version}/WEB-INF/lib/ > ${version}_libs.txt
+}
+
 # Download the older Jenkins war
 get_war ${VERSION_ONE}
 
 # Unzip its contents to VERSION_ONE folder
-echo -e "${CYAN}Running : ${YELLOW}unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/$VERSION_ONE/jenkins-war-$VERSION_ONE.war -d $VERSION_ONE${NC}\n\n"
-unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/$VERSION_ONE/jenkins-war-$VERSION_ONE.war -d $VERSION_ONE
+get_dependencie_list ${VERSION_ONE}
 
 # Download the newer Jenkins war
 get_war ${VERSION_TWO}
 
 # Unzip its contents to VERSION_TWO folder
-echo -e "${CYAN}Running : ${YELLOW}unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/$VERSION_TWO/jenkins-war-$VERSION_TWO.war -d $VERSION_TWO${NC}"
-unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/$VERSION_TWO/jenkins-war-$VERSION_TWO.war -d $VERSION_TWO
+get_dependencie_list ${VERSION_TWO}
 
-# List out the jars in /WEB-INF/lib/ for each version and find the diff
-ls -1 $VERSION_ONE/WEB-INF/lib/ > version_one_libs.txt
-ls -1 $VERSION_TWO/WEB-INF/lib/ > version_two_libs.txt
-
-diff -u version_one_libs.txt version_two_libs.txt > lib_diff.txt
+diff -u ${VERSION_ONE}_libs.txt ${VERSION_TWO}_libs.txt > lib_diff.txt
 
 # Output the differences
 printf "\n\n\n"
 
 echo -e "${CYAN}$VERSION_ONE ${YELLOW}dependency:${NC}"
-cat version_one_libs.txt
+cat ${VERSION_ONE}_libs.txt
 
 printf "\n\n"
 
 echo -e "${CYAN}$VERSION_TWO ${YELLOW}dependency:${NC}"
-cat version_two_libs.txt
+cat ${VERSION_TWO}_libs.txt
 
 # Create compare URLs for Jenkins core
 JENKINSCORE_COMPARE_URL="https://github.com/cloudbees/private-jenkins/compare/jenkins-$VERSION_ONE...jenkins-$VERSION_TWO"
@@ -60,7 +63,7 @@ echo -e "${CYAN}Refernce for comparison URL for artifacts: ${YELLOW}https://docs
 
 
 # Generate diff and convert to HTML for dependency (optional: for diff2html to work you will need to install Node.js)
-diff -u version_one_libs.txt version_two_libs.txt > diff_libs.txt
+diff -u ${VERSION_ONE}_libs.txt ${VERSION_TWO}_libs.txt > diff_libs.txt
 diff2html -t "Jenkins core jar compare $VERSION_ONE VS $VERSION_TWO" -i file -- diff_libs.txt > diff_libs.html 
 
 # Cleanup
