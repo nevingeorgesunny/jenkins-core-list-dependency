@@ -40,18 +40,19 @@ get_war ${VERSION_TWO}
 # Unzip its contents to VERSION_TWO folder
 get_dependencie_list ${VERSION_TWO}
 
-diff -u ${VERSION_ONE}_libs.txt ${VERSION_TWO}_libs.txt > lib_diff.txt
+diff --unified=0 ${VERSION_ONE}_libs.txt ${VERSION_TWO}_libs.txt > lib_diff.txt || true
 
 # Create compare URLs for Jenkins core
 JENKINSCORE_COMPARE_URL="https://github.com/cloudbees/private-jenkins/compare/jenkins-$VERSION_ONE...jenkins-$VERSION_TWO"
-echo -e "\n\n${CYAN}Jenkins core compare URL:${YELLOW} $JENKINSCORE_COMPARE_URL${NC}"
-
+echo -e "\n${CYAN}Jenkins core compare URL:${YELLOW} $JENKINSCORE_COMPARE_URL${NC}"
 echo -e "${CYAN}Refernce for comparison URL for artifacts: ${YELLOW}https://docs.google.com/spreadsheets/d/1GY3yMmW8HsGzTTPIt_lSzZOQQ1UM0JFCswddY3oeuig/edit?usp=sharing${NC}"
 
-
 # Generate diff and convert to HTML for dependency (optional: for diff2html to work you will need to install Node.js)
-diff -u ${VERSION_ONE}_libs.txt ${VERSION_TWO}_libs.txt > diff_libs.txt
-diff2html -t "Jenkins core jar compare $VERSION_ONE VS $VERSION_TWO" -i file -- diff_libs.txt > diff_libs.html 
+diff2html --title "Jenkins core jar compare $VERSION_ONE VS $VERSION_TWO" \
+    --input file \
+    --output stdout \
+    --fileContentToggle false \
+    -- lib_diff.txt > lib_diff.html
 
 # Cleanup
 rm *diff* *version*
