@@ -24,7 +24,7 @@ get_war() {
 get_dependencie_list() {
     local version="${1}"
 
-    echo -e "${CYAN}Running : ${YELLOW}unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/${version}/jenkins-war-${version}.war -d ${version}${NC}\n\n"
+    echo -e "${CYAN}Running : ${YELLOW}unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/${version}/jenkins-war-${version}.war -d ${version}${NC}"
     unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/${version}/jenkins-war-${version}.war -d ${version}
 
     ls -1 ${version}/WEB-INF/lib/ > ${version}_libs.txt
