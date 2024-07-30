@@ -22,7 +22,8 @@ This shell script is designed to list the dependencies of two different versions
   OLD=<old_version> NEW=<new_version> bash jenkins-list-dependency-changes.sh
   ```
 ## Sample Output
-![jenkins-diff](https://github.com/user-attachments/assets/de307b6d-a22c-400a-9afb-68946e335454)
+![GIF Recording 2024-07-30 at 6 00 20 PM](https://github.com/user-attachments/assets/c490ecd3-b8e2-43ef-b6cc-7315fc1c3cb0)
+
 
 
 ## To view the diff (optional Step)
