@@ -19,7 +19,7 @@ This shell script is designed to list the dependencies of two different versions
 - make sure the `maven`, `jar`, and `diff2html-cli` are installed
 - run these
   ```bash
-  VERSION_ONE=<old_version> VERSION_TWO=<new_version> bash jenkins-list-dependency-changes.sh
+  OLD=<old_version> NEW=<new_version> bash jenkins-list-dependency-changes.sh
   ```
 ## Sample Output
 ![jenkins-diff](https://github.com/user-attachments/assets/de307b6d-a22c-400a-9afb-68946e335454)
