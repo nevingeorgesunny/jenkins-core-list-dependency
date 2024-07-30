@@ -28,16 +28,11 @@ get_dependencie_list() {
     jar --list --file ${HOME}/.m2/repository/org/jenkins-ci/main/jenkins-war/${version}/jenkins-war-${version}.war | grep --extended-regexp "WEB-INF/lib/.*\.jar" | sort > ${version}_libs.txt
 }
 
-# Download the older Jenkins war
+# Download the Jenkins war for old and new.
 get_war ${OLD}
-
-# Unzip its contents to OLD folder
-get_dependencie_list ${OLD}
-
-# Download the newer Jenkins war
 get_war ${NEW}
-
-# Unzip its contents to NEW folder
+# Getting lists of libs from both versions.
+get_dependencie_list ${OLD}
 get_dependencie_list ${NEW}
 
 diff --unified=0 ${OLD}_libs.txt ${NEW}_libs.txt > lib_diff.txt || true
