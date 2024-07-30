@@ -1,59 +1,58 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
+set -euo pipefail
 
 # Prompt the user to enter versions
-read -p "Enter the old version: " VERSION_ONE
-read -p "Enter the new version: " VERSION_TWO
+if [[ -z  "${OLD-''}" ]]; then
+    read -p "Enter the old version: " OLD
+fi
+if [[ -z "${NEW-''}" ]]; then
+    read -p "Enter the new version: " NEW
+fi
 
 # Colors for output
 CYAN='\033[0;36m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# Download the older Jenkins war
-echo -e "${CYAN}Running : ${YELLOW}mvn dependency:get -DartifactId=jenkins-war -DgroupId=org.jenkins-ci.main -Dpackaging=war -Dversion=$VERSION_ONE -Dtransitive=false${NC}"
-mvn dependency:get -DartifactId=jenkins-war -DgroupId=org.jenkins-ci.main -Dpackaging=war -Dversion=$VERSION_ONE -Dtransitive=false
+get_war() {
+    local version="${1}"
 
-# Unzip its contents to VERSION_ONE folder
-echo -e "${CYAN}Running : ${YELLOW}unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/$VERSION_ONE/jenkins-war-$VERSION_ONE.war -d $VERSION_ONE${NC}\n\n"
-unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/$VERSION_ONE/jenkins-war-$VERSION_ONE.war -d $VERSION_ONE
+    echo -e "${CYAN}Running : ${YELLOW}mvn dependency:get -DartifactId=jenkins-war -DgroupId=org.jenkins-ci.main -Dpackaging=war -Dversion="${version}" -Dtransitive=false${NC}"
+    mvn -q dependency:get -DartifactId=jenkins-war -DgroupId=org.jenkins-ci.main -Dpackaging=war -Dversion="${version}" -Dtransitive=false
+}
+
+get_dependencie_list() {
+    local version="${1}"
+
+    echo -e "${CYAN}Running : ${YELLOW}jar --list --file [jenkins-war-${version}.war]${NC}"
+    jar --list --file ${HOME}/.m2/repository/org/jenkins-ci/main/jenkins-war/${version}/jenkins-war-${version}.war | grep --extended-regexp "WEB-INF/lib/.*\.jar" | sort > ${version}_libs.txt
+}
+
+# Download the older Jenkins war
+get_war ${OLD}
+
+# Unzip its contents to OLD folder
+get_dependencie_list ${OLD}
 
 # Download the newer Jenkins war
-echo -e "${CYAN}Running : ${YELLOW}mvn dependency:get -DartifactId=jenkins-war -DgroupId=org.jenkins-ci.main -Dpackaging=war -Dversion=$VERSION_TWO -Dtransitive=false${NC}"
-mvn dependency:get -DartifactId=jenkins-war -DgroupId=org.jenkins-ci.main -Dpackaging=war -Dversion=$VERSION_TWO -Dtransitive=false
+get_war ${NEW}
 
-# Unzip its contents to VERSION_TWO folder
-echo -e "${CYAN}Running : ${YELLOW}unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/$VERSION_TWO/jenkins-war-$VERSION_TWO.war -d $VERSION_TWO${NC}"
-unzip -q ~/.m2/repository/org/jenkins-ci/main/jenkins-war/$VERSION_TWO/jenkins-war-$VERSION_TWO.war -d $VERSION_TWO
+# Unzip its contents to NEW folder
+get_dependencie_list ${NEW}
 
-# List out the jars in /WEB-INF/lib/ for each version and find the diff
-ls -1 $VERSION_ONE/WEB-INF/lib/ > version_one_libs.txt
-ls -1 $VERSION_TWO/WEB-INF/lib/ > version_two_libs.txt
-
-diff -u version_one_libs.txt version_two_libs.txt > lib_diff.txt
-
-# Output the differences
-printf "\n\n\n"
-
-echo -e "${CYAN}$VERSION_ONE ${YELLOW}dependency:${NC}"
-cat version_one_libs.txt
-
-printf "\n\n"
-
-echo -e "${CYAN}$VERSION_TWO ${YELLOW}dependency:${NC}"
-cat version_two_libs.txt
+diff --unified=0 ${OLD}_libs.txt ${NEW}_libs.txt > lib_diff.txt || true
 
 # Create compare URLs for Jenkins core
-JENKINSCORE_COMPARE_URL="https://github.com/cloudbees/private-jenkins/compare/jenkins-$VERSION_ONE...jenkins-$VERSION_TWO"
-echo -e "\n\n${CYAN}Jenkins core compare URL:${YELLOW} $JENKINSCORE_COMPARE_URL${NC}"
-
+JENKINSCORE_COMPARE_URL="https://github.com/cloudbees/private-jenkins/compare/jenkins-$OLD...jenkins-$NEW"
+echo -e "\n${CYAN}Jenkins core compare URL:${YELLOW} $JENKINSCORE_COMPARE_URL${NC}"
 echo -e "${CYAN}Refernce for comparison URL for artifacts: ${YELLOW}https://docs.google.com/spreadsheets/d/1GY3yMmW8HsGzTTPIt_lSzZOQQ1UM0JFCswddY3oeuig/edit?usp=sharing${NC}"
 
-
 # Generate diff and convert to HTML for dependency (optional: for diff2html to work you will need to install Node.js)
-diff -u version_one_libs.txt version_two_libs.txt > diff_libs.txt
-diff2html -t "Jenkins core jar compare $VERSION_ONE VS $VERSION_TWO" -i file -- diff_libs.txt > diff_libs.html 
+diff2html --title "Jenkins core jar compare $OLD VS $NEW" \
+    --input file \
+    --output stdout \
+    --fileContentToggle false \
+    -- lib_diff.txt > lib_diff.html
 
 # Cleanup
-rm *diff* *version*
-rm -rf $VERSION_ONE $VERSION_TWO
+rm ${OLD}_libs.txt ${NEW}_libs.txt
