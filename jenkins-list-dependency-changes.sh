@@ -28,19 +28,26 @@ get_dependencie_list() {
     jar --list --file ${HOME}/.m2/repository/org/jenkins-ci/main/jenkins-war/${version}/jenkins-war-${version}.war | grep --extended-regexp "WEB-INF/lib/.*\.jar" | sort > ${version}_libs.txt
 }
 
-# Download the older Jenkins war
+# Download the Jenkins war for old and new.
 get_war ${OLD}
-
-# Unzip its contents to OLD folder
-get_dependencie_list ${OLD}
-
-# Download the newer Jenkins war
 get_war ${NEW}
-
-# Unzip its contents to NEW folder
+# Getting lists of libs from both versions.
+get_dependencie_list ${OLD}
 get_dependencie_list ${NEW}
 
-diff --unified=0 ${OLD}_libs.txt ${NEW}_libs.txt > lib_diff.txt || true
+set +e
+# Compares the two libs listing.
+## Diff commands returnss
+##  - 0 when no diff
+##  - 1 when there is diff
+##  - >1 when there is a problem
+diff --unified=0 ${OLD}_libs.txt ${NEW}_libs.txt > lib_diff.txt 2>&1
+diff_exit=$?
+if [[ $diff_exit -gt 1 ]]; then
+  echo -e "Something wrong happened with the diff command"
+  exit 1
+fi
+set -e
 
 # Create compare URLs for Jenkins core
 JENKINSCORE_COMPARE_URL="https://github.com/cloudbees/private-jenkins/compare/jenkins-$OLD...jenkins-$NEW"
