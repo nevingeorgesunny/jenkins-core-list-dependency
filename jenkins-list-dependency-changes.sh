@@ -55,5 +55,4 @@ diff2html --title "Jenkins core jar compare $VERSION_ONE VS $VERSION_TWO" \
     -- lib_diff.txt > lib_diff.html
 
 # Cleanup
-rm *diff* *version*
-rm -rf $VERSION_ONE $VERSION_TWO
+rm $VERSION_ONE_libs.txt $VERSION_TWO_libs.txt
