@@ -2,11 +2,11 @@
 set -euo pipefail
 
 # Prompt the user to enter versions
-if [[ -z  "${VERSION_ONE-''}" ]]; then
-    read -p "Enter the old version: " VERSION_ONE
+if [[ -z  "${OLD-''}" ]]; then
+    read -p "Enter the old version: " OLD
 fi
-if [[ -z "${VERSION_TWO-''}" ]]; then
-    read -p "Enter the new version: " VERSION_TWO
+if [[ -z "${NEW-''}" ]]; then
+    read -p "Enter the new version: " NEW
 fi
 
 # Colors for output
@@ -29,30 +29,30 @@ get_dependencie_list() {
 }
 
 # Download the older Jenkins war
-get_war ${VERSION_ONE}
+get_war ${OLD}
 
-# Unzip its contents to VERSION_ONE folder
-get_dependencie_list ${VERSION_ONE}
+# Unzip its contents to OLD folder
+get_dependencie_list ${OLD}
 
 # Download the newer Jenkins war
-get_war ${VERSION_TWO}
+get_war ${NEW}
 
-# Unzip its contents to VERSION_TWO folder
-get_dependencie_list ${VERSION_TWO}
+# Unzip its contents to NEW folder
+get_dependencie_list ${NEW}
 
-diff --unified=0 ${VERSION_ONE}_libs.txt ${VERSION_TWO}_libs.txt > lib_diff.txt || true
+diff --unified=0 ${OLD}_libs.txt ${NEW}_libs.txt > lib_diff.txt || true
 
 # Create compare URLs for Jenkins core
-JENKINSCORE_COMPARE_URL="https://github.com/cloudbees/private-jenkins/compare/jenkins-$VERSION_ONE...jenkins-$VERSION_TWO"
+JENKINSCORE_COMPARE_URL="https://github.com/cloudbees/private-jenkins/compare/jenkins-$OLD...jenkins-$NEW"
 echo -e "\n${CYAN}Jenkins core compare URL:${YELLOW} $JENKINSCORE_COMPARE_URL${NC}"
 echo -e "${CYAN}Refernce for comparison URL for artifacts: ${YELLOW}https://docs.google.com/spreadsheets/d/1GY3yMmW8HsGzTTPIt_lSzZOQQ1UM0JFCswddY3oeuig/edit?usp=sharing${NC}"
 
 # Generate diff and convert to HTML for dependency (optional: for diff2html to work you will need to install Node.js)
-diff2html --title "Jenkins core jar compare $VERSION_ONE VS $VERSION_TWO" \
+diff2html --title "Jenkins core jar compare $OLD VS $NEW" \
     --input file \
     --output stdout \
     --fileContentToggle false \
     -- lib_diff.txt > lib_diff.html
 
 # Cleanup
-rm ${VERSION_ONE}_libs.txt ${VERSION_TWO}_libs.txt
+rm ${OLD}_libs.txt ${NEW}_libs.txt
